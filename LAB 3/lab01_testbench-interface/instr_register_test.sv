@@ -86,6 +86,17 @@ module instr_register_test
     $display("  operand_b = %0d\n", operand_b);
   endfunction: print_transaction
 
+   function void save_data;
+    $display("BEFORE SAVING");
+    $display("  OPCODE: %0d ", opcode);
+    $display("  Operand A: %0d", operand_a);
+    $display("  Operand B: %0d", operand_b);
+    $display("  Actual Result: %0d", instruction_word.rez_t);
+    $display("DONE BEFORE SAVING");
+    iw_reg_test[write_pointer] = '{opcode, operand_a, operand_b, 'b0};
+  endfunction
+endfunction
+
   function void print_results;
     $display("Read from register location %0d: ", read_pointer);
     $display("  opcode = %0d (%s)", instruction_word.opc, instruction_word.opc.name);
