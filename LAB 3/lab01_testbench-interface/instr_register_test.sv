@@ -1,11 +1,10 @@
-/***********************************************************************
+/*************************
  * A SystemVerilog testbench for an instruction register.
  * The course labs will convert this to an object-oriented testbench
  * with constrained random test generation, functional coverage, and
  * a scoreboard for self-verification.
- **********************************************************************/
-
-module instr_register_test
+ ************************/
+module instr_register_test 
   import instr_register_pkg::*;  // user-defined types are defined in instr_register_pkg.sv
   (input  logic          clk,
    output logic          load_en,
@@ -15,52 +14,62 @@ module instr_register_test
    output opcode_t       opcode,
    output address_t      write_pointer,
    output address_t      read_pointer,
-   input  instruction_t  instruction_word
+   input  instruction_t  instruction_word,
+   input  result_t       instruction_word_rez
   );
 
- // timeunit 1ns/1ns;
+  timeunit 1ns/1ns;
+  parameter WD_NR = 3;
+  parameter RD_NR = 3;
+  parameter WR_ORDER = 1;
+  parameter RD_ORDER = 0;
+  int seed = 555; //
+  instruction_t  iw_reg_test [0:31];  // an array of instruction_word structures 32 de elemente [31:0] 32 de biti
 
-  int seed = 555;
 
   initial begin
-    $display("\n\n***********************************************************");
-    $display(    "***  THIS IS NOT A SELF-CHECKING TESTBENCH (YET).  YOU  ***");
-    $display(    "***  NEED TO VISUALLY VERIFY THAT THE OUTPUT VALUES     ***");
-    $display(    "***  MATCH THE INPUT VALUES FOR EACH REGISTER LOCATION  ***");
-    $display(    "***********************************************************");
+    $display("\n\n*********************");
+    $display(    "*  THIS IS NOT A SELF-CHECKING TESTBENCH (YET).  YOU  *");
+    $display(    "*  NEED TO VISUALLY VERIFY THAT THE OUTPUT VALUES     *");
+    $display(    "*  MATCH THE INPUT VALUES FOR EACH REGISTER LOCATION  *");
+    $display(    "*********************");
 
     $display("\nReseting the instruction register...");
     write_pointer  = 5'h00;         // initialize write pointer
     read_pointer   = 5'h1F;         // initialize read pointer
     load_en        = 1'b0;          // initialize load control line
     reset_n       <= 1'b0;          // assert reset_n (active low)
-    repeat (2) @(posedge clk) ;     // hold in reset for 2 clock cycles
+    repeat (2) @(posedge clk) ;     // hold in reset for 2 clock cycles//repete de doua ori doua posage de clock
     reset_n        = 1'b1;          // deassert reset_n (active low)
 
     $display("\nWriting values to register stack...");
     @(posedge clk) load_en = 1'b1;  // enable writing to register
-    repeat (3) begin
+    repeat (WD_NR) begin
       @(posedge clk) randomize_transaction;
-      @(negedge clk) print_transaction;
+      @(negedge clk)  print_transaction;
+      save_data;
+
     end
     @(posedge clk) load_en = 1'b0;  // turn-off writing to register
 
     // read back and display same three register locations
     $display("\nReading back the same register locations written...");
-    for (int i=0; i<=2; i++) begin
+    for (int i=0; i<RD_NR; i++) begin //BD 05.03.2024
       // later labs will replace this loop with iterating through a
       // scoreboard to determine which addresses were written and
       // the expected values to be read back
       @(posedge clk) read_pointer = i;
-      @(negedge clk) print_results;
+      @(negedge clk) begin print_results;
+      check_result;
+      end
     end
 
     @(posedge clk) ;
-    $display("\n***********************************************************");
-    $display(  "***  THIS IS NOT A SELF-CHECKING TESTBENCH (YET).  YOU  ***");
-    $display(  "***  NEED TO VISUALLY VERIFY THAT THE OUTPUT VALUES     ***");
-    $display(  "***  MATCH THE INPUT VALUES FOR EACH REGISTER LOCATION  ***");
-    $display(  "***********************************************************\n");
+    $display("\n*********************");
+    $display(  "*  THIS IS A SELF-CHECKING TESTBENCH.  YOU DONT       *");
+    $display(  "*  NEED TO VISUALLY VERIFY THAT THE OUTPUT VALUES     *");
+    $display(  "*  MATCH THE INPUT VALUES FOR EACH REGISTER LOCATION  *");
+    $display(  "*********************\n");
     $finish;
   end
 
@@ -73,20 +82,85 @@ module instr_register_test
     // write_pointer values in a later lab
     //
     static int temp = 0;
+    static int temp_decremental = 32;
     operand_a     <= $random(seed)%16;                 // between -15 and 15
     operand_b     <= $unsigned($random)%16;            // between 0 and 15
     opcode        <= opcode_t'($unsigned($random)%8);  // between 0 and 7, cast to opcode_t type
-    write_pointer <= temp++;
+    case (WR_ORDER)
+      0 : write_pointer <= temp++;
+      1 : write_pointer <= $unsigned($random)%32;
+      2 : write_pointer <= temp_decremental--;
+    endcase
+    //write_pointer <= temp++; //toate valorile trebuie sa le punem intreun iv reg 
+    //iw_reg[write_pointer] aici trebuie sa stocam toate valorile generate
+    
   endfunction: randomize_transaction
+
+    function void check_result;
+      case(iw_reg_test[read_pointer].opc)
+        ZERO : iw_reg_test[read_pointer].rez_t=0;
+        PASSA: iw_reg_test[read_pointer].rez_t= iw_reg_test[read_pointer].op_a;
+        PASSB: iw_reg_test[read_pointer].rez_t=iw_reg_test[read_pointer].op_b;
+        ADD  : iw_reg_test[read_pointer].rez_t=iw_reg_test[read_pointer].op_a+ iw_reg_test[read_pointer].op_b;
+        SUB  : iw_reg_test[read_pointer].rez_t=iw_reg_test[read_pointer].op_a- iw_reg_test[read_pointer].op_b;
+        MULT : iw_reg_test[read_pointer].rez_t=iw_reg_test[read_pointer].op_a * iw_reg_test[read_pointer].op_b;
+        DIV  : iw_reg_test[read_pointer].rez_t=iw_reg_test[read_pointer].op_a / iw_reg_test[read_pointer].op_b;
+        MOD  : iw_reg_test[read_pointer].rez_t=iw_reg_test[read_pointer].op_a % iw_reg_test[read_pointer].op_b;
+      endcase
+
+    if(instruction_word.rez_t!= iw_reg_test[read_pointer].rez_t) begin
+    $display("ERROR: Mismatch detected at read pointer %0d", read_pointer);
+    $display("  Opcode: %0d (%s)", iw_reg_test[read_pointer].opc, iw_reg_test[read_pointer].opc.name);
+    $display("  Operand A: %0d", iw_reg_test[read_pointer].op_a);
+    $display("  Operand B: %0d", iw_reg_test[read_pointer].op_b);
+    $display("  Expected Result: %0d", iw_reg_test[read_pointer].rez_t);
+    $display("  Actual Result: %0d", instruction_word.rez_t);
+  end else begin
+    $display("SUCCESS: No mismatch at read pointer %0d", read_pointer);
+    $display("  Opcode: %0d (%s)", iw_reg_test[read_pointer].opc, iw_reg_test[read_pointer].opc.name);
+    $display("  Operand A: %0d", iw_reg_test[read_pointer].op_a);
+    $display("  Operand B: %0d", iw_reg_test[read_pointer].op_b);
+    $display("  Result: %0d", instruction_word.rez_t);
+  end
+    if(instruction_word.rez_t != iw_reg_test[read_pointer].rez_t )begin
+    $display("ERROR: Datele de la adresa urmatoare nu conincid,  %0d", read_pointer);
+    $display("RESULT INCORRECT");
+    end else begin
+    $display("SUCCESS: Datele de la adresa urmatoare coincid %0d", read_pointer);
+    $display("RESULT CORRECT");
+    end 
+    if(instruction_word.op_a != iw_reg_test[read_pointer].op_a )begin
+    $display("ERROR: Datele de la adresa urmatoare nu conincid,  %0d", read_pointer);
+    $display("OP_A INCORRECT");
+    end else begin
+    $display("SUCCESS: Datele de la adresa urmatoare coincid %0d", read_pointer);
+    $display("OP_A CORRECT");
+    end 
+    if(instruction_word.op_b != iw_reg_test[read_pointer].op_b )begin
+    $display("ERROR: Datele de la adresa urmatoare nu conincid,  %0d", read_pointer);
+    $display("OP_B INCORRECT");
+    end else begin
+    $display("SUCCESS: Datele de la adresa urmatoare coincid %0d", read_pointer);
+    $display("OP_B CORRECT");
+    end 
+    if(instruction_word.opc != iw_reg_test[read_pointer].opc )begin
+    $display("ERROR: Datele de la adresa urmatoare nu conincid,  %0d", read_pointer);
+    $display("OPCODE INCORRECT");
+    end else begin
+    $display("SUCCESS: Datele de la adresa urmatoare coincid %0d", read_pointer);
+    $display("OPCODE CORRECT");
+    end 
+  endfunction: check_result
 
   function void print_transaction;
     $display("Writing to register location %0d: ", write_pointer);
     $display("  opcode = %0d (%s)", opcode, opcode.name);
     $display("  operand_a = %0d",   operand_a);
-    $display("  operand_b = %0d\n", operand_b);
+    $display("  operand_b = %0d", operand_b);
+    $display("  instruction_word_rez= %0d\n", instruction_word.rez_t);
   endfunction: print_transaction
 
-   function void save_data;
+  function void save_data;
     $display("BEFORE SAVING");
     $display("  OPCODE: %0d ", opcode);
     $display("  Operand A: %0d", operand_a);
@@ -95,13 +169,13 @@ module instr_register_test
     $display("DONE BEFORE SAVING");
     iw_reg_test[write_pointer] = '{opcode, operand_a, operand_b, 'b0};
   endfunction
-endfunction
 
   function void print_results;
     $display("Read from register location %0d: ", read_pointer);
     $display("  opcode = %0d (%s)", instruction_word.opc, instruction_word.opc.name);
     $display("  operand_a = %0d",   instruction_word.op_a);
-    $display("  operand_b = %0d\n", instruction_word.op_b);
+    $display("  operand_b = %0d", instruction_word.op_b);
+    $display("  instruction_word_rez= %0d\n", instruction_word.rez_t);
   endfunction: print_results
 
 endmodule: instr_register_test
