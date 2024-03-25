@@ -82,7 +82,7 @@ module instr_register_test
     // write_pointer values in a later lab
     //
     static int temp = 0;
-    static int temp_decremental = 32;
+    static int temp_decremental = 31;
     operand_a     <= $random(seed)%16;                 // between -15 and 15
     operand_b     <= $unsigned($random)%16;            // between 0 and 15
     opcode        <= opcode_t'($unsigned($random)%8);  // between 0 and 7, cast to opcode_t type
