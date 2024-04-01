@@ -21,10 +21,14 @@ module instr_register_test
   timeunit 1ns/1ns;
   parameter WD_NR = 3;
   parameter RD_NR = 3;
-  parameter WR_ORDER = 1;
-  parameter RD_ORDER = 0;
-  int seed = 555; //
+  parameter WR_ORDER = 2;
+  parameter RD_ORDER = 2;
+  int seed = 555; 
+  int passed_tests = 0;
+  int failed_tests = 0;
   instruction_t  iw_reg_test [0:31];  // an array of instruction_word structures 32 de elemente [31:0] 32 de biti
+  
+
 
 
   initial begin
@@ -41,29 +45,36 @@ module instr_register_test
     reset_n       <= 1'b0;          // assert reset_n (active low)
     repeat (2) @(posedge clk) ;     // hold in reset for 2 clock cycles//repete de doua ori doua posage de clock
     reset_n        = 1'b1;          // deassert reset_n (active low)
+    foreach (iw_reg_test[i])        // resetam iw_reg_test
+      iw_reg_test[i] = '{opc:ZERO,default:0};
 
-    $display("\nWriting values to register stack...");
+    $display("\nWriting values to register stack...\n");
     @(posedge clk) load_en = 1'b1;  // enable writing to register
     repeat (WD_NR) begin
       @(posedge clk) randomize_transaction;
       @(negedge clk)  print_transaction;
       save_data;
-
     end
     @(posedge clk) load_en = 1'b0;  // turn-off writing to register
 
     // read back and display same three register locations
-    $display("\nReading back the same register locations written...");
+    $display("\nReading back the same register locations written...\n");
     for (int i=0; i<RD_NR; i++) begin //BD 05.03.2024
       // later labs will replace this loop with iterating through a
       // scoreboard to determine which addresses were written and
       // the expected values to be read back
-      @(posedge clk) read_pointer = i;
+      case (RD_ORDER)
+        0 : @(posedge clk) read_pointer = i;
+        1 : @(posedge clk) read_pointer = $unsigned($random)%32;
+        2 : @(posedge clk) read_pointer = 31 - (i % 32);
+      endcase
+      
       @(negedge clk) begin print_results;
       check_result;
       end
     end
 
+    final_report;
     @(posedge clk) ;
     $display("\n*********************");
     $display(  "*  THIS IS A SELF-CHECKING TESTBENCH.  YOU DONT       *");
@@ -91,22 +102,22 @@ module instr_register_test
       1 : write_pointer <= $unsigned($random)%32;
       2 : write_pointer <= temp_decremental--;
     endcase
-    //write_pointer <= temp++; //toate valorile trebuie sa le punem intreun iv reg 
-    //iw_reg[write_pointer] aici trebuie sa stocam toate valorile generate
+    //write_pointer <= temp++; //toate valoriel alea trebuie sa sa le punem intre-un iv reg 
+    //iw_reg[write_pointer]. aici trebuie sa stockez toate valorile generate
     
   endfunction: randomize_transaction
 
-    function void check_result;
-      case(iw_reg_test[read_pointer].opc)
-        ZERO : iw_reg_test[read_pointer].rez_t=0;
-        PASSA: iw_reg_test[read_pointer].rez_t= iw_reg_test[read_pointer].op_a;
-        PASSB: iw_reg_test[read_pointer].rez_t=iw_reg_test[read_pointer].op_b;
-        ADD  : iw_reg_test[read_pointer].rez_t=iw_reg_test[read_pointer].op_a+ iw_reg_test[read_pointer].op_b;
-        SUB  : iw_reg_test[read_pointer].rez_t=iw_reg_test[read_pointer].op_a- iw_reg_test[read_pointer].op_b;
-        MULT : iw_reg_test[read_pointer].rez_t=iw_reg_test[read_pointer].op_a * iw_reg_test[read_pointer].op_b;
-        DIV  : iw_reg_test[read_pointer].rez_t=iw_reg_test[read_pointer].op_a / iw_reg_test[read_pointer].op_b;
-        MOD  : iw_reg_test[read_pointer].rez_t=iw_reg_test[read_pointer].op_a % iw_reg_test[read_pointer].op_b;
-      endcase
+  function void check_result;
+    case(iw_reg_test[read_pointer].opc)
+      ZERO : iw_reg_test[read_pointer].rez_t = 0;
+      PASSA: iw_reg_test[read_pointer].rez_t = iw_reg_test[read_pointer].op_a;
+      PASSB: iw_reg_test[read_pointer].rez_t = iw_reg_test[read_pointer].op_b;
+      ADD  : iw_reg_test[read_pointer].rez_t = iw_reg_test[read_pointer].op_a + iw_reg_test[read_pointer].op_b;
+      SUB  : iw_reg_test[read_pointer].rez_t = iw_reg_test[read_pointer].op_a - iw_reg_test[read_pointer].op_b;
+      MULT : iw_reg_test[read_pointer].rez_t = iw_reg_test[read_pointer].op_a * iw_reg_test[read_pointer].op_b;
+      DIV  : iw_reg_test[read_pointer].rez_t = iw_reg_test[read_pointer].op_a / iw_reg_test[read_pointer].op_b;
+      MOD  : iw_reg_test[read_pointer].rez_t = iw_reg_test[read_pointer].op_a % iw_reg_test[read_pointer].op_b;
+    endcase
 
     if(instruction_word.rez_t!= iw_reg_test[read_pointer].rez_t) begin
     $display("ERROR: Mismatch detected at read pointer %0d", read_pointer);
@@ -115,40 +126,26 @@ module instr_register_test
     $display("  Operand B: %0d", iw_reg_test[read_pointer].op_b);
     $display("  Expected Result: %0d", iw_reg_test[read_pointer].rez_t);
     $display("  Actual Result: %0d", instruction_word.rez_t);
-  end else begin
+    failed_tests++;
+    end else begin
     $display("SUCCESS: No mismatch at read pointer %0d", read_pointer);
     $display("  Opcode: %0d (%s)", iw_reg_test[read_pointer].opc, iw_reg_test[read_pointer].opc.name);
     $display("  Operand A: %0d", iw_reg_test[read_pointer].op_a);
     $display("  Operand B: %0d", iw_reg_test[read_pointer].op_b);
     $display("  Result: %0d", instruction_word.rez_t);
-  end
+    passed_tests++;
+    end
     if(instruction_word.rez_t != iw_reg_test[read_pointer].rez_t )begin
-    $display("ERROR: Datele de la adresa urmatoare nu conincid,  %0d", read_pointer);
-    $display("RESULT INCORRECT");
-    end else begin
-    $display("SUCCESS: Datele de la adresa urmatoare coincid %0d", read_pointer);
-    $display("RESULT CORRECT");
-    end 
+    $display("ERROR: Rezultat incorect");
+    end
     if(instruction_word.op_a != iw_reg_test[read_pointer].op_a )begin
-    $display("ERROR: Datele de la adresa urmatoare nu conincid,  %0d", read_pointer);
-    $display("OP_A INCORRECT");
-    end else begin
-    $display("SUCCESS: Datele de la adresa urmatoare coincid %0d", read_pointer);
-    $display("OP_A CORRECT");
+    $display("ERROR: OPERAND_A incorect");
     end 
     if(instruction_word.op_b != iw_reg_test[read_pointer].op_b )begin
-    $display("ERROR: Datele de la adresa urmatoare nu conincid,  %0d", read_pointer);
-    $display("OP_B INCORRECT");
-    end else begin
-    $display("SUCCESS: Datele de la adresa urmatoare coincid %0d", read_pointer);
-    $display("OP_B CORRECT");
-    end 
+    $display("ERROR: OPERAND_B incorect");
+    end
     if(instruction_word.opc != iw_reg_test[read_pointer].opc )begin
-    $display("ERROR: Datele de la adresa urmatoare nu conincid,  %0d", read_pointer);
-    $display("OPCODE INCORRECT");
-    end else begin
-    $display("SUCCESS: Datele de la adresa urmatoare coincid %0d", read_pointer);
-    $display("OPCODE CORRECT");
+    $display("ERROR: OPCODE INCORECT");
     end 
   endfunction: check_result
 
@@ -161,13 +158,14 @@ module instr_register_test
   endfunction: print_transaction
 
   function void save_data;
-    $display("BEFORE SAVING");
-    $display("  OPCODE: %0d ", opcode);
-    $display("  Operand A: %0d", operand_a);
-    $display("  Operand B: %0d", operand_b);
-    $display("  Actual Result: %0d", instruction_word.rez_t);
-    $display("DONE BEFORE SAVING");
+    // $display("BEFORE SAVING");
+    // $display("  OPCODE: %0d ", opcode);
+    // $display("  Operand A: %0d", operand_a);
+    // $display("  Operand B: %0d", operand_b);
+    // $display("  Actual Result: %0d", instruction_word.rez_t);
+    // $display("DONE BEFORE SAVING");
     iw_reg_test[write_pointer] = '{opcode, operand_a, operand_b, 'b0};
+    $display("DATA SAVED\n");
   endfunction
 
   function void print_results;
@@ -178,4 +176,11 @@ module instr_register_test
     $display("  instruction_word_rez= %0d\n", instruction_word.rez_t);
   endfunction: print_results
 
+  function void final_report;
+    $display("Tests that passed %0d: ", passed_tests);
+    $display("Tests that failed %0d: ", failed_tests);
+  endfunction: final_report
+
 endmodule: instr_register_test
+//Tema o functie check results in fn de readpointer sa stie care este op a b opcode si sa calc expected resoult si sa compare a b opcode si rezultatul cu iw_regresult(ce am primit de la dut).
+//
