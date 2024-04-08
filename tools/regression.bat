@@ -1,0 +1,9 @@
+call run_test.bat 10 10 0 0 c
+call run_test.bat 10 10 0 1 c
+call run_test.bat 10 10 1 0 c
+call run_test.bat 10 10 1 1 c
+call run_test.bat 10 10 1 2 c
+call run_test.bat 10 10 2 1 c 
+call run_test.bat 10 10 0 2 c
+call run_test.bat 10 10 2 0 c
+call run_test.bat 10 10 2 2 c

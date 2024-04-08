@@ -1,0 +1,6 @@
+../LAB 3/lab_dut/instr_register_pkg.sv   	                +incdir+../../lab_dut
+../LAB 3/lab_dut/instr_register.sv   	                +incdir+../../lab_dut
+
+
+../LAB 3/lab01_testbench-interface/instr_register_test.sv        +incdir+../lab01_testbench-interface
+../LAB 3/lab01_testbench-interface/top.sv                    +incdir+../lab01_testbench-interface
