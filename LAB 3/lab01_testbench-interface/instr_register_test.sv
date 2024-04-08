@@ -19,11 +19,10 @@ module instr_register_test
   );
 
   timeunit 1ns/1ns;
-  parameter WR_NR = 3;
+  parameter WD_NR = 3;
   parameter RD_NR = 3;
   parameter WR_ORDER = 2;
   parameter RD_ORDER = 2;
-  parameter TEST_NAME;
   int seed = 555; 
   int passed_tests = 0;
   int failed_tests = 0;
@@ -181,7 +180,6 @@ module instr_register_test
     $display("Tests that passed %0d: ", passed_tests);
     $display("Tests that failed %0d: ", failed_tests);
   endfunction: final_report
-
 
 endmodule: instr_register_test
 //Tema o functie check results in fn de readpointer sa stie care este op a b opcode si sa calc expected resoult si sa compare a b opcode si rezultatul cu iw_regresult(ce am primit de la dut).

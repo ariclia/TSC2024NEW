@@ -1,2 +1,2 @@
-# ** Error: (vish-3296) Unknown option '-do run.do 10 10 2 2'.
+# ** Error: (vish-3296) Unknown option '-do run.do 10 10 2 2 DEC-DEC'.
 # Use the -help option for complete vsim usage.
