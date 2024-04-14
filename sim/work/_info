@@ -1,0 +1,60 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Users/claud/OneDrive/Desktop/TSC2024NEW/TSC2024NEW/sim
+vinstr_register
+Z1 DXx6 sv_std 3 std 0 22 AD7iAPLo6nTIKk<N0eo=D3
+DXx4 work 18 instr_register_pkg 0 22 ?LKNf<GdIbcF=c[dQGzSf0
+Z2 !s110 1713119156
+!i10b 1
+!s100 kgYcPXXR?A_?zmHnFnWi:3
+IbZ00Z:]MT5`40;9W`1KeA3
+VDg1SIo80bB@j0V0VzS_@n1
+!s105 instr_register_sv_unit
+S1
+R0
+w1713117794
+8../lab_dut/instr_register.sv
+F../lab_dut/instr_register.sv
+L0 9
+Z3 OV;L;10.5b;63
+r1
+!s85 0
+31
+Z4 !s108 1713119156.000000
+Z5 !s107 ../lab01_testbench-interface/top.sv|../lab01_testbench-interface/instr_register_test.sv|../lab_dut/instr_register.sv|../lab_dut/instr_register_pkg.sv|
+Z6 !s90 -sv|-timescale|1ps/1ps|-work|work|-f|sources.txt|
+!i113 1
+Z7 o-sv -timescale 1ps/1ps -work work
+Z8 !s92 -sv -timescale 1ps/1ps -work work +incdir+../lab_dut +incdir+../lab_dut +incdir+../lab01_testbench-interface +incdir+../lab01_testbench-interface
+Z9 tCvgOpt 0
+Xinstr_register_pkg
+R1
+R2
+!i10b 1
+!s100 [PeIK6>DXFbi:1Qi27]d60
+I?LKNf<GdIbcF=c[dQGzSf0
+V?LKNf<GdIbcF=c[dQGzSf0
+S1
+R0
+w1713117639
+8../lab_dut/instr_register_pkg.sv
+F../lab_dut/instr_register_pkg.sv
+L0 5
+R3
+r1
+!s85 0
+31
+R4
+R5
+R6
+!i113 1
+R7
+R8
+R9

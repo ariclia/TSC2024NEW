@@ -1,6 +1,6 @@
-/*************************
+/***********************************************************************
  * A SystemVerilog top-level netlist to connect testbench to DUT
- ************************/
+ **********************************************************************/
 
 module top; //metoda de incapsulare a codului 
   timeunit 1ns/1ns; //o nano scunda cu o rezoutie de o nano secunda 

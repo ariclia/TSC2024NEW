@@ -1,9 +1,9 @@
-/*************************
+/***********************************************************************
  * A SystemVerilog testbench for an instruction register.
  * The course labs will convert this to an object-oriented testbench
  * with constrained random test generation, functional coverage, and
  * a scoreboard for self-verification.
- ************************/
+ **********************************************************************/
 module instr_register_test 
   import instr_register_pkg::*;  // user-defined types are defined in instr_register_pkg.sv
   (input  logic          clk,
@@ -19,11 +19,11 @@ module instr_register_test
   );
 
   timeunit 1ns/1ns;
-  parameter WR_NR = 3;
-  parameter RD_NR = 3;
+  parameter WD_NR = 7;
+  parameter RD_NR = 7;
   parameter WR_ORDER = 2;
   parameter RD_ORDER = 2;
-  parameter TEST_NAME;
+  parameter TEST_NAME = "INC_INC";
   int seed = 555; 
   int passed_tests = 0;
   int failed_tests = 0;
@@ -33,11 +33,11 @@ module instr_register_test
 
 
   initial begin
-    $display("\n\n*********************");
-    $display(    "*  THIS IS NOT A SELF-CHECKING TESTBENCH (YET).  YOU  *");
-    $display(    "*  NEED TO VISUALLY VERIFY THAT THE OUTPUT VALUES     *");
-    $display(    "*  MATCH THE INPUT VALUES FOR EACH REGISTER LOCATION  *");
-    $display(    "*********************");
+    $display("\n\n***********************************************************");
+    $display(    "***  THIS IS NOT A SELF-CHECKING TESTBENCH (YET).  YOU  ***");
+    $display(    "***  NEED TO VISUALLY VERIFY THAT THE OUTPUT VALUES     ***");
+    $display(    "***  MATCH THE INPUT VALUES FOR EACH REGISTER LOCATION  ***");
+    $display(    "***********************************************************");
 
     $display("\nReseting the instruction register...");
     write_pointer  = 5'h00;         // initialize write pointer
@@ -77,11 +77,11 @@ module instr_register_test
 
     final_report;
     @(posedge clk) ;
-    $display("\n*********************");
-    $display(  "*  THIS IS A SELF-CHECKING TESTBENCH.  YOU DONT       *");
-    $display(  "*  NEED TO VISUALLY VERIFY THAT THE OUTPUT VALUES     *");
-    $display(  "*  MATCH THE INPUT VALUES FOR EACH REGISTER LOCATION  *");
-    $display(  "*********************\n");
+    $display("\n***********************************************************");
+    $display(  "***  THIS IS A SELF-CHECKING TESTBENCH.  YOU DONT       ***");
+    $display(  "***  NEED TO VISUALLY VERIFY THAT THE OUTPUT VALUES     ***");
+    $display(  "***  MATCH THE INPUT VALUES FOR EACH REGISTER LOCATION  ***");
+    $display(  "***********************************************************\n");
     $finish;
   end
 
@@ -178,11 +178,24 @@ module instr_register_test
   endfunction: print_results
 
   function void final_report;
-    $display("Tests that passed %0d: ", passed_tests);
-    $display("Tests that failed %0d: ", failed_tests);
+    int    fd      ;
+    string filename;
+
+    $display("Tests that passed :%0d ", passed_tests);
+    $display("Tests that failed :%0d ", failed_tests);
+
+    //Form the string for the file name
+    filename = $sformatf("../reports/regression_transcript/final_report");
+
+    //Open the file in write mode
+    fd = $fopen(filename, "a");
+
+    if(failed_tests != 0)
+      $fdisplay(fd, "Test: %s has FAILED.", TEST_NAME);
+    else
+      $fdisplay(fd, "Test: %s has PASSED.", TEST_NAME);
+
+    $fclose(fd);
+    //fopen "..report/tegression_re.....txt"
+    //aici scriem numele testului si spunem daca este pass sau fail si ceilalti parametrii
   endfunction: final_report
-
-
-endmodule: instr_register_test
-//Tema o functie check results in fn de readpointer sa stie care este op a b opcode si sa calc expected resoult si sa compare a b opcode si rezultatul cu iw_regresult(ce am primit de la dut).
-//

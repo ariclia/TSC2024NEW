@@ -8,9 +8,9 @@
 
 # Check if the sources must be re-compiled
 if {[file isdirectory work]} {
-  set compile_on 0 //daca suntem in command line
+  set compile_on 0 
 } else {
-  set compile_on 1 // daca suntem in mod grafic
+  set compile_on 1
 }
 
 # In [GUI_mode]: always compile sources / [regress_mode]: compile sources only once
@@ -18,16 +18,16 @@ if {$compile_on || [batch_mode] == 0} {
   vlib work
   vlog -sv -timescale "1ps/1ps" -work work       -f sources.txt
   #vlog -sv -timescale "1ps/1ps" -cover bcesft -work work       -f sources.txt
-}
+} 
 
 # Load project
   eval vsim -novopt -quiet -nocoverage +notimingchecks +nowarnTSCALE -sva top
-# eval vsim -novopt -quiet -coverage +code=bcesft +notimingchecks +nowarnTSCALE -GWR_NR=$1 -GRD_NR=$2 -GWR_ORDER=$3 -GRD_ORDER=$4 -sva top
+# eval vsim -novopt -quiet -coverage +code=bcesft +notimingchecks +nowarnTSCALE -GWR_NR=$1 -GRD_NR=$2 -GWR_ORDER=$3 -GRD_ORDER=$4 -GTEST_NAME=$5 -sva top
 
 # Run log/wave commands
 # Batch_mode = 0 [GUI_mode]; Batch_mode = 1 [regress_mode]
 if {[batch_mode] == 0} {
-  eval log -r /* //salveaza in vlf (baza de date)
+  eval log -r /*
   eval do wave.do
 }
 

@@ -10,11 +10,6 @@ interface tb_ifc (input logic clk);
 
   // ADD CODE TO DECLARE THE INTERFACE SIGNALS
 
-modport dut (input load_en, reset_n, operand_a,operand_b, opcode, write_pointer,read_pointer
-            output instruction_word);
 
-modport test (input load_en, reset_n, operand_a,operand_b, opcode, write_pointer,read_pointer
-            output instruction_word);
-  
 endinterface: tb_ifc
 
