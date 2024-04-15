@@ -136,16 +136,16 @@ module instr_register_test
     $display("  Result: %0d", instruction_word.rez_t);
     passed_tests++;
     end
-    if(instruction_word.rez_t != iw_reg_test[read_pointer].rez_t )begin
+    if(instruction_word.rez_t !== iw_reg_test[read_pointer].rez_t )begin
     $display("ERROR: Rezultat incorect");
     end
-    if(instruction_word.op_a != iw_reg_test[read_pointer].op_a )begin
+    if(instruction_word.op_a !== iw_reg_test[read_pointer].op_a )begin
     $display("ERROR: OPERAND_A incorect");
     end 
-    if(instruction_word.op_b != iw_reg_test[read_pointer].op_b )begin
+    if(instruction_word.op_b !== iw_reg_test[read_pointer].op_b )begin
     $display("ERROR: OPERAND_B incorect");
     end
-    if(instruction_word.opc != iw_reg_test[read_pointer].opc )begin
+    if(instruction_word.opc !== iw_reg_test[read_pointer].opc )begin
     $display("ERROR: OPCODE INCORECT");
     end 
   endfunction: check_result
@@ -199,3 +199,5 @@ module instr_register_test
     //fopen "..report/tegression_re.....txt"
     //aici scriem numele testului si spunem daca este pass sau fail si ceilalti parametrii
   endfunction: final_report
+
+  endmodule

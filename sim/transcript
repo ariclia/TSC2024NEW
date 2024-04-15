@@ -1,33 +1,186 @@
 # do run.do
 # 1
 # Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
-# Start time: 21:25:56 on Apr 14,2024
+# Start time: 08:45:37 on Apr 15,2024
 # vlog -sv -timescale 1ps/1ps -work work -f sources.txt 
 # -- Compiling package instr_register_pkg
 # -- Compiling module instr_register
 # -- Importing package instr_register_pkg
 # -- Compiling module instr_register_test
 # -- Compiling module top
-# ** Error: (vlog-13069) ../lab01_testbench-interface/top.sv(68): near "top": syntax error, unexpected end of source code.
-# End time: 21:25:56 on Apr 14,2024, Elapsed time: 0:00:00
-# Errors: 1, Warnings: 0
-# ** Error: C:/intelFPGA/18.1/modelsim_ase/win32aloem/vlog failed.
-# Error in macro ./run.do line 21
-# C:/intelFPGA/18.1/modelsim_ase/win32aloem/vlog failed.
-#     while executing
-# "vlog -sv -timescale "1ps/1ps" -work work       -f sources.txt"
-#     invoked from within
-# "if {$compile_on || [batch_mode] == 0} {
-#   vlib work
-#   vlog -sv -timescale "1ps/1ps" -work work       -f sources.txt
-#   #vlog -sv -timescale "1ps/1ps" -..."
-# do run.do 10 10 0 0 INC_INC
-# 0
+# 
+# Top level modules:
+# 	top
+# End time: 08:45:37 on Apr 15,2024, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
 # vsim -novopt -quiet -nocoverage "+notimingchecks" "+nowarnTSCALE" -sva top 
-# Start time: 21:25:59 on Apr 14,2024
-# ** Error: (vsim-3170) Could not find 'top'.
-#         Searched libraries:
-#             C:/Users/claud/OneDrive/Desktop/TSC2024NEW/TSC2024NEW/sim/work
-# Error loading design
-# End time: 21:25:59 on Apr 14,2024, Elapsed time: 0:00:00
-# Errors: 1, Warnings: 0
+# Start time: 08:45:37 on Apr 15,2024
+# 
+# 
+# ***********************************************************
+# ***  THIS IS NOT A SELF-CHECKING TESTBENCH (YET).  YOU  ***
+# ***  NEED TO VISUALLY VERIFY THAT THE OUTPUT VALUES     ***
+# ***  MATCH THE INPUT VALUES FOR EACH REGISTER LOCATION  ***
+# ***********************************************************
+# 
+# Reseting the instruction register...
+# 
+# Writing values to register stack...
+# 
+# LOADD_EN 1 timp                   35
+# Writing to register location 31: 
+#   opcode = 1 (PASSA)
+#   operand_a = -12
+#   operand_b = 7
+#   instruction_word_rez= 0
+# 
+# DATA SAVED
+# 
+# LOADD_EN 1 timp                   45
+# Writing to register location 30: 
+#   opcode = 0 (ZERO)
+#   operand_a = -9
+#   operand_b = 1
+#   instruction_word_rez= -12
+# 
+# DATA SAVED
+# 
+# LOADD_EN 1 timp                   55
+# Writing to register location 29: 
+#   opcode = 7 (MOD)
+#   operand_a = -15
+#   operand_b = 8
+#   instruction_word_rez= -12
+# 
+# DATA SAVED
+# 
+# LOADD_EN 1 timp                   65
+# Writing to register location 28: 
+#   opcode = 5 (MULT)
+#   operand_a = -8
+#   operand_b = 7
+#   instruction_word_rez= -12
+# 
+# DATA SAVED
+# 
+# LOADD_EN 1 timp                   75
+# Writing to register location 27: 
+#   opcode = 3 (ADD)
+#   operand_a = -9
+#   operand_b = 5
+#   instruction_word_rez= -12
+# 
+# DATA SAVED
+# 
+# LOADD_EN 1 timp                   85
+# Writing to register location 26: 
+#   opcode = 4 (SUB)
+#   operand_a = 5
+#   operand_b = 3
+#   instruction_word_rez= -12
+# 
+# DATA SAVED
+# 
+# LOADD_EN 1 timp                   95
+# Writing to register location 25: 
+#   opcode = 3 (ADD)
+#   operand_a = 3
+#   operand_b = 12
+#   instruction_word_rez= -12
+# 
+# DATA SAVED
+# 
+# LOADD_EN 1 timp                  105
+# 
+# Reading back the same register locations written...
+# 
+# Read from register location 31: 
+#   opcode = 1 (PASSA)
+#   operand_a = -12
+#   operand_b = 7
+#   instruction_word_rez= -12
+# 
+# SUCCESS: No mismatch at read pointer 31
+#   Opcode: 1 (PASSA)
+#   Operand A: -12
+#   Operand B: 7
+#   Result: -12
+# Read from register location 30: 
+#   opcode = 0 (ZERO)
+#   operand_a = -9
+#   operand_b = 1
+#   instruction_word_rez= 0
+# 
+# SUCCESS: No mismatch at read pointer 30
+#   Opcode: 0 (ZERO)
+#   Operand A: -9
+#   Operand B: 1
+#   Result: 0
+# Read from register location 29: 
+#   opcode = 7 (MOD)
+#   operand_a = -15
+#   operand_b = 8
+#   instruction_word_rez= -7
+# 
+# SUCCESS: No mismatch at read pointer 29
+#   Opcode: 7 (MOD)
+#   Operand A: -15
+#   Operand B: 8
+#   Result: -7
+# Read from register location 28: 
+#   opcode = 5 (MULT)
+#   operand_a = -8
+#   operand_b = 7
+#   instruction_word_rez= -56
+# 
+# SUCCESS: No mismatch at read pointer 28
+#   Opcode: 5 (MULT)
+#   Operand A: -8
+#   Operand B: 7
+#   Result: -56
+# Read from register location 27: 
+#   opcode = 3 (ADD)
+#   operand_a = -9
+#   operand_b = 5
+#   instruction_word_rez= -4
+# 
+# SUCCESS: No mismatch at read pointer 27
+#   Opcode: 3 (ADD)
+#   Operand A: -9
+#   Operand B: 5
+#   Result: -4
+# Read from register location 26: 
+#   opcode = 4 (SUB)
+#   operand_a = 5
+#   operand_b = 3
+#   instruction_word_rez= 2
+# 
+# SUCCESS: No mismatch at read pointer 26
+#   Opcode: 4 (SUB)
+#   Operand A: 5
+#   Operand B: 3
+#   Result: 2
+# Read from register location 25: 
+#   opcode = 3 (ADD)
+#   operand_a = 3
+#   operand_b = 12
+#   instruction_word_rez= 15
+# 
+# SUCCESS: No mismatch at read pointer 25
+#   Opcode: 3 (ADD)
+#   Operand A: 3
+#   Operand B: 12
+#   Result: 15
+# Tests that passed :7 
+# Tests that failed :0 
+# 
+# ***********************************************************
+# ***  THIS IS A SELF-CHECKING TESTBENCH.  YOU DONT       ***
+# ***  NEED TO VISUALLY VERIFY THAT THE OUTPUT VALUES     ***
+# ***  MATCH THE INPUT VALUES FOR EACH REGISTER LOCATION  ***
+# ***********************************************************
+# 
+# ** Note: $finish    : ../lab01_testbench-interface/instr_register_test.sv(85)
+#    Time: 186 ns  Iteration: 1  Instance: /top/test
+# End time: 08:45:38 on Apr 15,2024, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
